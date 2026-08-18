@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Sparkles,
   Bug,
   Wheat,
   TrendingUp,
@@ -9,7 +8,6 @@ import {
   Beaker,
   BarChart3,
   Store,
-  ShoppingCart,
   Receipt,
   Landmark,
   Users,
@@ -23,7 +21,6 @@ import { useState } from 'react';
 
 const navItems = [
   { path: '/farmer/dashboard', label: 'Farmer Home OS', icon: LayoutDashboard },
-  { path: '/farmer/copilot', label: 'AI Decision Copilot', icon: Sparkles },
   { path: '/farmer/crops', label: 'Crop Management', icon: Wheat },
   { path: '/farmer/disease', label: 'Pest & Disease AI', icon: Bug },
   { path: '/farmer/yield', label: 'Yield & Harvest AI', icon: TrendingUp },
@@ -34,7 +31,6 @@ const navItems = [
   { path: '/farmer/weather', label: 'Weather & Irrigation', icon: Cloud },
   { path: '/farmer/soil', label: 'Soil & Fertilizer', icon: Beaker },
   { path: '/farmer/seller', label: 'Farmer Seller Mode', icon: Store },
-  { path: '/farmer/orders', label: 'Produce Orders', icon: ShoppingCart },
   { path: '/farmer/community', label: 'Farmer Community', icon: Users },
   { path: '/farmer/voice', label: 'Voice AI Assistant', icon: Mic },
 ];

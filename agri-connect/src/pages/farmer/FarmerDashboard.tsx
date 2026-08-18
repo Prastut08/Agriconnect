@@ -17,11 +17,14 @@ import {
   Users,
   Beaker,
   AlertOctagon,
+  ClipboardList,
+  Clock,
 } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { mockUser, mockCrops, mockDiseaseAlerts, mockOrders, mockWeather, mockProducts, mockGovernmentSchemes, mockExpenses, mockIncome } from '../../data/mockData';
+import { actionCenterMockTasks } from '../../components/farmer/ActionCenter';
 
 // 4 Preset Copilot Prompts
 const COPILOT_PRESETS = [
@@ -143,6 +146,41 @@ export default function FarmerDashboard() {
           </div>
         </div>
       </div>
+
+      {/* 📋 Today's Farm Tasks / Todo List */}
+      <Card className="p-6 border-2 border-primary/10 bg-gradient-to-br from-gray-50/60 via-white to-gray-50/40 shadow-md rounded-3xl">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <ClipboardList className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-bold text-text">Today's Farm Tasks</h2>
+          </div>
+          <Link to="/farmer/tasks">
+            <Button size="sm" variant="outline">View All Tasks</Button>
+          </Link>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {actionCenterMockTasks.slice(0, 3).map((task) => (
+            <div key={task.id} className={`p-4 rounded-2xl border-l-4 ${
+              task.priority === 'high' ? 'border-l-error bg-red-50' :
+              task.priority === 'recommended' ? 'border-l-primary bg-green-50' :
+              task.priority === 'opportunity' ? 'border-l-accent bg-amber-50' :
+              'border-l-gray-300 bg-gray-50'
+            }`}>
+              <div className="flex items-start gap-2 mb-2">
+                <div className="mt-0.5">{task.icon}</div>
+                <div>
+                  <h4 className="font-semibold text-text text-sm">{task.title}</h4>
+                  <p className="text-xs text-text-light mt-1">{task.reason}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between ml-6">
+                <span className="text-xs font-medium text-primary bg-white px-2.5 py-1 rounded-lg">{task.action}</span>
+                <span className="text-[11px] text-text-light font-medium flex items-center gap-1"><Clock className="w-3 h-3" /> {task.time}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       {/* Key Metric Overview Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -474,6 +512,44 @@ export default function FarmerDashboard() {
               </Link>
             </div>
           ))}
+        </div>
+      </Card>
+
+      {/* 📦 Upcoming & Pending Orders */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <ClipboardList className="w-5 h-5 text-emerald-700" />
+            <h2 className="text-xl font-bold text-text">Upcoming & Pending Orders</h2>
+          </div>
+          <Link to="/farmer/orders">
+            <Button variant="outline" size="sm">View All Orders</Button>
+          </Link>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {mockOrders
+            .filter((o) => o.farmerId === mockUser.id && ['new', 'accepted', 'preparing', 'ready'].includes(o.status))
+            .slice(0, 3)
+            .map((order) => (
+              <div key={order.id} className="p-4 rounded-2xl border border-gray-100 bg-surface hover:shadow-md transition-all">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h4 className="font-bold text-text text-sm">Order #{order.id}</h4>
+                    <p className="text-xs text-text-light">Customer: {order.customerName}</p>
+                  </div>
+                  <Badge variant={order.status === 'new' ? 'warning' : order.status === 'accepted' ? 'info' : 'success'}>
+                    {order.status.replace('-', ' ')}
+                  </Badge>
+                </div>
+                <p className="text-xs text-text-light mb-1">
+                  {order.items.map((item) => `${item.productName} (${item.quantity} ${item.unit})`).join(', ')}
+                </p>
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-sm font-bold text-text">Total: ₹{order.totalAmount}</span>
+                  <span className="text-xs text-text-light">Payment: {order.paymentStatus}</span>
+                </div>
+              </div>
+            ))}
         </div>
       </Card>
 
