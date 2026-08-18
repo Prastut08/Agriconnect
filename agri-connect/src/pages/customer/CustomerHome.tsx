@@ -34,6 +34,8 @@ export default function CustomerHome() {
     <div className="space-y-8 pb-16">
       {/* Hero */}
       <section className="relative bg-gradient-to-r from-emerald-900 via-primary to-teal-900 rounded-3xl p-8 md:p-12 text-white shadow-xl overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80" alt="" className="absolute inset-0 w-full h-full object-cover opacity-25 mix-blend-luminosity" />
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 via-primary/80 to-teal-900/70 rounded-3xl" />
         <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-3xl">
           <div className="flex items-center gap-2 mb-3">

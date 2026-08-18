@@ -15,7 +15,7 @@ export const mockUser: Farmer = {
   totalSales: 2500000,
   verified: true,
   bio: 'Third-generation farmer passionate about sustainable agriculture',
-  avatar: '',
+  avatar: '/farmer.jpg',
   createdAt: '2020-01-15',
 };
 
@@ -117,6 +117,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-1',
     farmerName: 'Rajesh Kumar',
     name: 'Organic Wheat',
+    images: ['https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80'],
     category: 'Grains',
     price: 45,
     unit: 'kg',
@@ -130,7 +131,7 @@ export const mockProducts: Product[] = [
     rating: 4.8,
     reviews: 124,
     description: 'Premium organic wheat grown without synthetic pesticides',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -138,6 +139,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-1',
     farmerName: 'Rajesh Kumar',
     name: 'Fresh Tomatoes',
+    images: ['https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80'],
     category: 'Vegetables',
     price: 35,
     unit: 'kg',
@@ -151,7 +153,7 @@ export const mockProducts: Product[] = [
     rating: 4.9,
     reviews: 89,
     description: 'Vine-ripened organic tomatoes, perfect for cooking',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -159,6 +161,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-2',
     farmerName: 'Amit Singh',
     name: 'Farm Fresh Potatoes',
+    images: ['https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=600&q=80'],
     category: 'Vegetables',
     price: 25,
     unit: 'kg',
@@ -172,7 +175,7 @@ export const mockProducts: Product[] = [
     rating: 4.5,
     reviews: 67,
     description: 'Freshly harvested potatoes, ideal for all cooking needs',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -180,6 +183,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-3',
     farmerName: 'Sunita Devi',
     name: 'Organic Basmati Rice',
+    images: ['https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80'],
     category: 'Grains',
     price: 120,
     unit: 'kg',
@@ -193,7 +197,7 @@ export const mockProducts: Product[] = [
     rating: 4.9,
     reviews: 203,
     description: 'Premium aged basmati rice with long grains',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -201,6 +205,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-4',
     farmerName: 'Vikram Patel',
     name: 'Fresh Onions',
+    images: ['https://images.unsplash.com/photo-1618512496248-a07fe83aa8cf?auto=format&fit=crop&w=600&q=80'],
     category: 'Vegetables',
     price: 20,
     unit: 'kg',
@@ -214,7 +219,7 @@ export const mockProducts: Product[] = [
     rating: 4.3,
     reviews: 45,
     description: 'Farm fresh onions with long shelf life',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -222,6 +227,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-5',
     farmerName: 'Lakshmi Iyer',
     name: 'Organic Mangoes',
+    images: ['https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=600&q=80'],
     category: 'Fruits',
     price: 150,
     unit: 'dozen',
@@ -235,7 +241,7 @@ export const mockProducts: Product[] = [
     rating: 4.9,
     reviews: 312,
     description: 'Alphonso mangoes, the king of fruits',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -243,6 +249,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-2',
     farmerName: 'Amit Singh',
     name: 'Fresh Spinach',
+    images: ['https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=600&q=80'],
     category: 'Vegetables',
     price: 40,
     unit: 'bunch',
@@ -256,7 +263,7 @@ export const mockProducts: Product[] = [
     rating: 4.6,
     reviews: 34,
     description: 'Farm fresh spinach, harvested this morning',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -264,6 +271,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-3',
     farmerName: 'Sunita Devi',
     name: 'Organic Carrots',
+    images: ['https://images.unsplash.com/photo-1598170845058-12f6a6736561?auto=format&fit=crop&w=600&q=80'],
     category: 'Vegetables',
     price: 60,
     unit: 'kg',
@@ -277,7 +285,7 @@ export const mockProducts: Product[] = [
     rating: 4.7,
     reviews: 56,
     description: 'Sweet organic carrots, perfect for salads',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -285,6 +293,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-4',
     farmerName: 'Vikram Patel',
     name: 'Fresh Green Chilies',
+    images: ['https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80'],
     category: 'Vegetables',
     price: 80,
     unit: 'kg',
@@ -298,7 +307,7 @@ export const mockProducts: Product[] = [
     rating: 4.4,
     reviews: 23,
     description: 'Spicy fresh green chilies',
-    images: [],
+    
     status: 'active',
   },
   {
@@ -306,6 +315,7 @@ export const mockProducts: Product[] = [
     farmerId: 'farmer-5',
     farmerName: 'Lakshmi Iyer',
     name: 'Organic Bananas',
+    images: ['https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80'],
     category: 'Fruits',
     price: 50,
     unit: 'dozen',
@@ -319,7 +329,7 @@ export const mockProducts: Product[] = [
     rating: 4.6,
     reviews: 89,
     description: 'Naturally ripened organic bananas',
-    images: [],
+    
     status: 'active',
   },
 ];
@@ -620,6 +630,8 @@ export const mockFarmers: Farmer[] = [
     rating: 4.8,
     totalSales: 2500000,
     verified: true,
+    bio: 'Third-generation farmer passionate about sustainable agriculture',
+    avatar: '/farmer.jpg',
     createdAt: '2020-01-15',
   },
   {
@@ -636,6 +648,8 @@ export const mockFarmers: Farmer[] = [
     rating: 4.5,
     totalSales: 1200000,
     verified: true,
+    bio: 'Young progressive farmer pioneering modern farming techniques in Haryana',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
     createdAt: '2021-03-20',
   },
   {
@@ -652,6 +666,8 @@ export const mockFarmers: Farmer[] = [
     rating: 4.9,
     totalSales: 3500000,
     verified: true,
+    bio: 'Award-winning organic farmer and women empowerment advocate',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
     createdAt: '2018-07-10',
   },
   {
@@ -668,6 +684,8 @@ export const mockFarmers: Farmer[] = [
     rating: 4.3,
     totalSales: 800000,
     verified: true,
+    bio: 'Focused on water-efficient farming in semi-arid Maharashtra',
+    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
     createdAt: '2022-01-05',
   },
   {
@@ -684,6 +702,8 @@ export const mockFarmers: Farmer[] = [
     rating: 4.7,
     totalSales: 1500000,
     verified: true,
+    bio: 'Tropical fruit specialist with natural farming practices',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
     createdAt: '2019-09-15',
   },
 ];

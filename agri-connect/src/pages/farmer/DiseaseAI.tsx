@@ -168,9 +168,9 @@ export default function DiseaseAI() {
             </p>
           </div>
 
-          <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 hover:border-primary transition-colors bg-gray-50/50">
-            <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-xs text-text-light mb-4">Drag and drop leaf photo, or click to upload</p>
+          <div className="border-2 border-dashed border-gray-300 rounded-2xl p-4 hover:border-primary transition-colors bg-gray-50/50 relative overflow-hidden">
+            <img src="/disease-leaf.jpg" alt="Tomato leaf with late blight symptoms" className="w-full h-48 object-cover rounded-xl mb-3 shadow-inner" />
+            <p className="text-xs text-text-light mb-4">AI detected: Tomato Late Blight • Drag another photo to re-scan</p>
             <div className="flex items-center justify-center gap-3">
               <Button onClick={handleAnalyze} disabled={isAnalyzing} className="shadow-md">
                 {isAnalyzing ? 'Analyzing AI Computer Vision...' : 'Upload & Analyze Photo'}

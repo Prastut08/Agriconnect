@@ -28,32 +28,51 @@ export default function Landing() {
         </div>
       </nav>
 
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-background" />
-        <div className="max-w-7xl mx-auto relative">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
-              <Zap className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">India's #1 AI Agriculture Platform</span>
+      <section className="relative pt-28 pb-24 px-4 overflow-hidden min-h-[90vh] flex items-center">
+        <div className="absolute inset-0">
+          <img src="/hero.jpg" alt="Indian wheat farm at golden hour" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10 w-full">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-6">
+              <Zap className="w-4 h-4 text-amber-400" />
+              <span className="text-sm font-bold text-white">🇮🇳 India's #1 AI Agriculture Platform</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-text mb-6 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
               India's AI-Powered<br />
-              <span className="text-primary">Digital Agriculture</span><br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-400">Digital Agriculture</span><br />
               Ecosystem
             </h1>
-            <p className="text-xl text-text-light mb-8 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl leading-relaxed">
               Empowering farmers with AI-driven insights, direct market access, and smart tools to increase yields, reduce costs, and build sustainable livelihoods.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start gap-4 mb-12">
               <Link to="/role">
-                <Button size="lg" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-primary/30 text-base px-8">
                   Start Your Farm Journey
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 text-base px-8">
                 Watch Demo
               </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { value: '50,000+', label: 'Farmers Onboarded', emoji: '👨‍🌾' },
+                { value: '₹2.5Cr+', label: 'Farmer Earnings', emoji: '💰' },
+                { value: '30%', label: 'Yield Increase', emoji: '📈' },
+                { value: '15%', label: 'Cost Reduction', emoji: '🎯' },
+              ].map((stat, idx) => (
+                <div key={idx} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center hover:bg-white/20 transition-all duration-300">
+                  <p className="text-sm mb-1">{stat.emoji}</p>
+                  <p className="text-xl md:text-2xl font-black text-white">{stat.value}</p>
+                  <p className="text-[11px] text-gray-300 font-medium mt-0.5">{stat.label}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
