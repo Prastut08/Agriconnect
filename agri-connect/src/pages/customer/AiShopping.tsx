@@ -18,6 +18,10 @@ const mockAIResponses: Record<string, { products: typeof mockProducts; reason: s
     products: mockProducts.filter((p) => p.category === 'Grains').slice(0, 3),
     reason: 'Wheat prices are currently 3.3% below market average. These farmers offer the best value.',
   },
+  'under 100': {
+    products: mockProducts.filter((p) => p.price < 100).slice(0, 3),
+    reason: 'Great value picks under ₹100. Fresh, locally sourced, and delivery-ready.',
+  },
 };
 
 export default function AiShopping() {
@@ -62,7 +66,7 @@ export default function AiShopping() {
         <div className="flex gap-3">
           <input
             type="text"
-            placeholder="e.g., organic vegetables near me, best price wheat"
+            placeholder="e.g., organic vegetables near me, best price wheat, under ₹100"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -74,7 +78,7 @@ export default function AiShopping() {
         </div>
 
         <div className="flex flex-wrap gap-2 mt-4">
-          {['organic vegetables near me', 'fresh tomatoes', 'best price wheat'].map((suggestion) => (
+          {['organic vegetables near me', 'fresh tomatoes', 'best price wheat', 'under 100'].map((suggestion) => (
             <button
               key={suggestion}
               onClick={() => { setQuery(suggestion); handleSearch(); }}

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Mic, Sparkles, ShieldCheck, TrendingDown, QrCode } from 'lucide-react';
+import { Search, Mic, Sparkles, TrendingDown, QrCode, Flame, Clock, BadgeCheck } from 'lucide-react';
 import { ProductCard } from '../../components/customer/ProductCard';
 import { FarmerCard } from '../../components/customer/FarmerCard';
 import { mockProducts, mockFarmers, mockCustomer } from '../../data/mockData';
@@ -12,13 +12,29 @@ export default function CustomerHome() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const categories = ['all', 'Vegetables', 'Fruits', 'Grains', 'Pulses', 'Dairy', 'Organic', 'Seasonal'];
-  const freshNearYou = mockProducts.filter((p) => p.distance < 20);
-  const topFarmers = mockFarmers.filter((f) => f.rating >= 4.5);
+
+  const filteredProducts = useMemo(() => {
+    let products = mockProducts;
+    if (selectedCategory !== 'all') {
+      products = products.filter((p) => p.category === selectedCategory);
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      products = products.filter((p) => p.name.toLowerCase().includes(q) || p.farmerName.toLowerCase().includes(q));
+    }
+    return products;
+  }, [selectedCategory, search]);
+
+  const freshNearYou = useMemo(() => filteredProducts.filter((p) => p.distance < 20).slice(0, 4), [filteredProducts]);
+  const popularToday = useMemo(() => [...filteredProducts].sort((a, b) => b.rating - a.rating).slice(0, 4), [filteredProducts]);
+  const seasonalPicks = useMemo(() => filteredProducts.filter((p) => p.farmingMethod === 'organic').slice(0, 4), [filteredProducts]);
+  const topFarmers = useMemo(() => mockFarmers.filter((f) => f.rating >= 4.5).slice(0, 3), []);
 
   return (
     <div className="space-y-8 pb-16">
-      {/* Marketplace Header Hero */}
+      {/* Hero */}
       <section className="relative bg-gradient-to-r from-emerald-900 via-primary to-teal-900 rounded-3xl p-8 md:p-12 text-white shadow-xl overflow-hidden">
+        <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-3xl">
           <div className="flex items-center gap-2 mb-3">
             <span className="px-3 py-1 bg-amber-400 text-amber-950 text-xs font-black uppercase tracking-wider rounded-full shadow-sm">
@@ -30,13 +46,12 @@ export default function CustomerHome() {
           </div>
 
           <h1 className="text-3xl md:text-5xl font-black mb-3 tracking-tight">
-            Buy Fresh Direct From Local Farmers
+            Fresh From Farmers Near You 🌱
           </h1>
           <p className="text-emerald-100 text-sm md:text-base mb-6">
-            Eliminate middlemen markup. Pay fair prices to farmers while receiving 100% farm-fresh, organic produce delivered to your doorstep.
+            Buy farm-fresh produce directly from verified local farmers. Fair prices, full traceability, and home delivery.
           </p>
 
-          {/* Search Bar */}
           <div className="flex items-center gap-3">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -55,9 +70,8 @@ export default function CustomerHome() {
         </div>
       </section>
 
-      {/* Customer Savings & Transparent Pricing Banner */}
+      {/* Savings + Transparent Pricing */}
       <div className="grid md:grid-cols-2 gap-4">
-        {/* Customer Savings Counter */}
         <Card className="p-5 border-2 border-emerald-500/30 bg-emerald-50/70 shadow-sm rounded-2xl flex items-center gap-4">
           <div className="p-3 bg-emerald-700 text-white rounded-2xl shadow-md">
             <TrendingDown className="w-7 h-7" />
@@ -71,7 +85,6 @@ export default function CustomerHome() {
           </div>
         </Card>
 
-        {/* Transparent Pricing Model */}
         <Card className="p-5 border-2 border-amber-400/40 bg-amber-50/70 shadow-sm rounded-2xl">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">Transparent Middleman Breakdown</span>
@@ -94,7 +107,7 @@ export default function CustomerHome() {
         </Card>
       </div>
 
-      {/* 🤖 F. AI Shopping Assistant Quick Prompts */}
+      {/* AI Shopping Assistant */}
       <Card className="p-6 border-2 border-primary/20 bg-gradient-to-br from-emerald-50/40 via-white to-teal-50/30 shadow-md rounded-2xl">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -109,10 +122,10 @@ export default function CustomerHome() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
           {[
-            '“Which vegetables are cheapest today?”',
-            '“Find fruits for a family of four.”',
-            '“What is seasonal right now?”',
-            '“Show organic products under ₹500.”',
+            'Which vegetables are cheapest today?',
+            'Find fruits for a family of four.',
+            'What is seasonal right now?',
+            'Show organic products under ₹500.',
           ].map((prompt, idx) => (
             <Link key={idx} to="/customer/ai-shopping">
               <button className="w-full p-3 rounded-xl bg-white border border-gray-200 hover:border-primary text-left text-text-light hover:text-text font-medium transition-all line-clamp-2">
@@ -123,7 +136,7 @@ export default function CustomerHome() {
         </div>
       </Card>
 
-      {/* Category Pills */}
+      {/* Categories */}
       <section>
         <div className="flex items-center gap-2 overflow-x-auto pb-2">
           {categories.map((cat) => (
@@ -140,7 +153,7 @@ export default function CustomerHome() {
         </div>
       </section>
 
-      {/* 🥕 B. Direct Farm Marketplace - Produce Near You */}
+      {/* Nearby Fresh Produce */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -149,53 +162,95 @@ export default function CustomerHome() {
           </div>
           <Link to="/customer/products" className="text-xs font-bold text-primary hover:underline">View All Produce →</Link>
         </div>
+        {freshNearYou.length === 0 ? (
+          <Card className="p-12 text-center">
+            <p className="text-text-light">No products found in this category nearby.</p>
+          </Card>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {freshNearYou.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Popular Today */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-black text-text flex items-center gap-2">
+              <Flame className="w-6 h-6 text-red-500" />
+              Popular Today
+            </h2>
+            <p className="text-xs text-text-light">Most ordered products today</p>
+          </div>
+        </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {freshNearYou.slice(0, 4).map((product) => (
+          {popularToday.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
 
-      {/* 👨🌾 C. "Know Your Farmer" Spotlight */}
+      {/* Seasonal Picks */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-2xl font-black text-text flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-primary" />
-              Know Your Farmer ⭐
+              <Clock className="w-6 h-6 text-primary" />
+              Seasonal Picks
             </h2>
-            <p className="text-xs text-text-light">Meet verified local farmers and learn their farm stories</p>
+            <p className="text-xs text-text-light">Fresh organic picks of the season</p>
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {seasonalPicks.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+
+      {/* Top Farmers */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-black text-text flex items-center gap-2">
+              <BadgeCheck className="w-6 h-6 text-primary" />
+              Top Farmers
+            </h2>
+            <p className="text-xs text-text-light">Verified farmers with highest ratings</p>
           </div>
           <Link to="/customer/nearby" className="text-xs font-bold text-primary hover:underline">Discover Nearby Farmers →</Link>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {topFarmers.slice(0, 3).map((farmer) => (
+          {topFarmers.map((farmer) => (
             <FarmerCard key={farmer.id} farmer={farmer} />
           ))}
         </div>
       </section>
 
-      {/* 🔄 H. Recurring Subscriptions Banner */}
-      <Card className="p-6 bg-gradient-to-r from-emerald-950 to-teal-900 text-white rounded-3xl shadow-lg">
+      {/* Deals / Subscriptions Banner */}
+      <Card className="p-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-3xl shadow-lg">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <span className="px-3 py-1 bg-amber-400 text-amber-950 text-xs font-black uppercase tracking-wider rounded-full">
-              Recurring Delivery
+            <span className="px-3 py-1 bg-white/20 text-white text-xs font-black uppercase tracking-wider rounded-full">
+              Limited Time Deals
             </span>
-            <h3 className="text-2xl font-black mt-2">Subscribe & Never Run Out</h3>
-            <p className="text-emerald-100 text-xs sm:text-sm mt-1 max-w-xl">
-              Subscribe to 🥛 Daily Fresh Milk, 🥬 Weekly Vegetables Box, 🍎 Weekly Fruit Baskets, or 🌾 Monthly Grain Packs.
+            <h3 className="text-2xl font-black mt-2">Save More With Subscriptions</h3>
+            <p className="text-amber-100 text-xs sm:text-sm mt-1 max-w-xl">
+              Subscribe to weekly vegetable boxes, fruit baskets, or monthly grain packs and save up to 20%.
             </p>
           </div>
           <Link to="/customer/subscriptions">
-            <Button size="lg" className="bg-amber-400 text-amber-950 hover:bg-amber-300 font-extrabold shadow-md whitespace-nowrap">
-              Manage Subscriptions →
+            <Button size="lg" className="bg-white text-amber-900 hover:bg-amber-50 font-extrabold shadow-md whitespace-nowrap">
+              View Subscriptions →
             </Button>
           </Link>
         </div>
       </Card>
 
-      {/* Produce Traceability Footer Card */}
+      {/* Traceability */}
       <Card className="p-5 border border-gray-200 rounded-2xl bg-surface">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -213,7 +268,7 @@ export default function CustomerHome() {
         </div>
       </Card>
 
-      {/* Floating AI Shopping button */}
+      {/* Floating AI */}
       <Link to="/customer/ai-shopping" className="fixed bottom-6 right-6 z-40">
         <div className="w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110 ring-4 ring-white">
           <Sparkles className="w-6 h-6" />

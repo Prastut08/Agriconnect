@@ -1,34 +1,42 @@
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Sprout, Users, ChevronRight, Leaf, Sun, Cloud } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function RoleSelect() {
   const [hoveredRole, setHoveredRole] = useState<string | null>(null);
-  const [searchParams] = useSearchParams();
+  
+  const navigate = useNavigate();
+  const { switchRole } = useAuth();
 
-  const isDemo = searchParams.get('demo') === 'true';
+  const handleRoleSelect = (roleId: 'farmer' | 'customer') => {
+    switchRole(roleId);
+    if (roleId === 'farmer') {
+      navigate('/farmer/dashboard');
+    } else {
+      navigate('/customer/home');
+    }
+  };
 
   const roles = [
     {
-      id: 'farmer',
+      id: 'farmer' as const,
       title: 'FARMER',
       subtitle: 'Grow Smarter',
       description: 'AI-powered insights, market intelligence, and tools to maximize your farm productivity and profits.',
       icon: Sprout,
       color: 'primary',
       features: ['AI Crop Recommendations', 'Disease Detection', 'Yield Prediction', 'Market Prices', 'Financial Analytics'],
-      path: '/auth?role=farmer',
     },
     {
-      id: 'customer',
+      id: 'customer' as const,
       title: 'CUSTOMER',
       subtitle: 'Eat Fresh',
       description: 'Buy directly from verified farmers. Fresh produce, transparent pricing, and farm-to-table traceability.',
       icon: Users,
       color: 'secondary',
       features: ['Direct from Farmers', 'Fresh & Organic', 'Best Prices', 'Traceability', 'Home Delivery'],
-      path: '/auth?role=customer',
     },
   ];
 
@@ -60,12 +68,12 @@ export default function RoleSelect() {
 
           <div className="grid md:grid-cols-2 gap-8">
             {roles.map((role) => (
-              <Link
+              <div
                 key={role.id}
-                to={isDemo ? `${role.path}&demo=true` : role.path}
+                onClick={() => handleRoleSelect(role.id)}
                 onMouseEnter={() => setHoveredRole(role.id)}
                 onMouseLeave={() => setHoveredRole(null)}
-                className="block"
+                className="cursor-pointer block"
               >
                 <div
                   className={`relative p-8 rounded-3xl border-2 transition-all duration-300 ${
@@ -102,13 +110,13 @@ export default function RoleSelect() {
                     <ChevronRight className="w-5 h-5 ml-2" />
                   </Button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 
           <div className="text-center mt-12">
             <p className="text-sm text-text-light">
-              By continuing, you agree to our Terms of Service and Privacy Policy
+              You can switch between roles anytime from your dashboard
             </p>
           </div>
         </div>

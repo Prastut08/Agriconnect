@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { ProductCard } from '../../components/customer/ProductCard';
@@ -12,20 +12,24 @@ export default function Products() {
 
   const categories = ['all', 'Vegetables', 'Fruits', 'Grains', 'Pulses', 'Dairy'];
 
-  let filteredProducts = mockProducts.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = category === 'all' || product.category === category;
-    const matchesOrganic = !filters.organic || product.farmingMethod === 'organic';
-    const matchesNearMe = !filters.nearMe || product.distance < 20;
-    const matchesUnder50 = !filters.under50 || product.price < 50;
-    const matchesToday = !filters.today || product.availableDate === '2025-03-18';
-    return matchesSearch && matchesCategory && matchesOrganic && matchesNearMe && matchesUnder50 && matchesToday;
-  });
+  const filteredProducts = useMemo(() => {
+    let products = mockProducts.filter((product) => {
+      const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) || product.farmerName.toLowerCase().includes(search.toLowerCase());
+      const matchesCategory = category === 'all' || product.category === category;
+      const matchesOrganic = !filters.organic || product.farmingMethod === 'organic';
+      const matchesNearMe = !filters.nearMe || product.distance < 20;
+      const matchesUnder50 = !filters.under50 || product.price < 50;
+      const matchesToday = !filters.today || product.availableDate === '2025-03-18';
+      return matchesSearch && matchesCategory && matchesOrganic && matchesNearMe && matchesUnder50 && matchesToday;
+    });
 
-  if (sortBy === 'price') filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
-  else if (sortBy === 'distance') filteredProducts = [...filteredProducts].sort((a, b) => a.distance - b.distance);
-  else if (sortBy === 'freshness') filteredProducts = [...filteredProducts].sort((a, b) => b.freshness - a.freshness);
-  else filteredProducts = [...filteredProducts].sort((a, b) => b.rating - a.rating);
+    if (sortBy === 'price') products = [...products].sort((a, b) => a.price - b.price);
+    else if (sortBy === 'distance') products = [...products].sort((a, b) => a.distance - b.distance);
+    else if (sortBy === 'freshness') products = [...products].sort((a, b) => b.freshness - a.freshness);
+    else products = [...products].sort((a, b) => b.rating - a.rating);
+
+    return products;
+  }, [search, category, sortBy, filters]);
 
   return (
     <div className="space-y-6">
@@ -38,7 +42,7 @@ export default function Products() {
         <div className="flex-1 relative">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search products, farmers..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"

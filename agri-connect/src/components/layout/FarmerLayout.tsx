@@ -1,18 +1,10 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { Menu, Bell, Search, Wheat, ShoppingCart } from 'lucide-react';
+import { Outlet } from 'react-router-dom';
+import { Menu, Bell, Search, Wheat } from 'lucide-react';
 import { Sidebar } from './Sidebar';
-import { useAuth } from '../../contexts/AuthContext';
 
 export function FarmerLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { switchRole } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSwitchToCustomer = () => {
-    switchRole('customer');
-    navigate('/customer/home');
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,13 +38,6 @@ export function FarmerLayout() {
                   <Wheat className="w-3.5 h-3.5 text-amber-300" />
                   Farmer OS 🌾
                 </span>
-                <button
-                  onClick={handleSwitchToCustomer}
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-text-light hover:bg-white hover:text-text transition-all flex items-center gap-1.5"
-                >
-                  <ShoppingCart className="w-3.5 h-3.5 text-primary" />
-                  Customer Marketplace 🛒
-                </button>
               </div>
 
               <button className="relative p-2 rounded-xl hover:bg-gray-100 transition-colors">

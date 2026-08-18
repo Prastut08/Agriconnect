@@ -34,6 +34,9 @@ import Subscriptions from './pages/customer/Subscriptions';
 import Savings from './pages/customer/Savings';
 import NearbyFarmers from './pages/customer/NearbyFarmers';
 import AiShopping from './pages/customer/AiShopping';
+import CustomerProfile from './pages/customer/Profile';
+import SavedItems from './pages/customer/SavedItems';
+import Rewards from './pages/customer/Rewards';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 function FarmerRoute({ children }: { children: React.ReactNode }) {
@@ -105,6 +108,9 @@ const router = createBrowserRouter([
       { path: 'savings', element: <Savings /> },
       { path: 'nearby', element: <NearbyFarmers /> },
       { path: 'ai-shopping', element: <AiShopping /> },
+      { path: 'saved', element: <SavedItems /> },
+      { path: 'profile', element: <CustomerProfile /> },
+      { path: 'rewards', element: <Rewards /> },
     ],
   },
   { path: '/admin', element: <AdminDashboard /> },

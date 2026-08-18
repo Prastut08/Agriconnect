@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '../../components/ui/Card';
-import { Map, List } from 'lucide-react';
+import { Map, List, Search } from 'lucide-react';
 import { FarmerCard } from '../../components/customer/FarmerCard';
 import { mockFarmers } from '../../data/mockData';
 
@@ -9,16 +9,20 @@ export default function NearbyFarmers() {
   const [distance, setDistance] = useState('50');
   const [selectedCrop, setSelectedCrop] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
+  const [search, setSearch] = useState('');
 
-  const filteredFarmers = mockFarmers.filter((farmer) => {
-    const matchesDistance = farmer.location.includes('India');
-    const matchesCrop = selectedCrop === 'all' || farmer.crops.some(c => c.toLowerCase().includes(selectedCrop.toLowerCase()));
-    return matchesDistance && matchesCrop;
-  });
+  const filteredFarmers = useMemo(() => {
+    let farmers = mockFarmers.filter((farmer) => {
+      const matchesSearch = farmer.name.toLowerCase().includes(search.toLowerCase()) || farmer.farmName.toLowerCase().includes(search.toLowerCase());
+      const matchesCrop = selectedCrop === 'all' || farmer.crops.some(c => c.toLowerCase().includes(selectedCrop.toLowerCase()));
+      return matchesSearch && matchesCrop;
+    });
 
-  let sortedFarmers = [...filteredFarmers];
-  if (sortBy === 'rating') sortedFarmers = sortedFarmers.sort((a, b) => b.rating - a.rating);
-  else if (sortBy === 'price') sortedFarmers = sortedFarmers.sort((a, b) => a.totalSales - b.totalSales);
+    if (sortBy === 'rating') farmers = [...farmers].sort((a, b) => b.rating - a.rating);
+    else if (sortBy === 'price') farmers = [...farmers].sort((a, b) => a.totalSales - b.totalSales);
+
+    return farmers;
+  }, [search, selectedCrop, sortBy]);
 
   return (
     <div className="space-y-6">
@@ -47,6 +51,16 @@ export default function NearbyFarmers() {
             <Map className="w-4 h-4" />
             Map View
           </button>
+        </div>
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" />
+          <input
+            type="text"
+            placeholder="Search farmers..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
         </div>
         <select
           value={distance}
@@ -89,7 +103,7 @@ export default function NearbyFarmers() {
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedFarmers.map((farmer) => (
+          {filteredFarmers.map((farmer) => (
             <FarmerCard key={farmer.id} farmer={farmer} />
           ))}
         </div>

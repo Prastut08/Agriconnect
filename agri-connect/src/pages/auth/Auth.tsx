@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate, Navigate } from 'react-router-dom';
 import { Sprout, Phone, ArrowLeft } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
@@ -9,6 +9,14 @@ export default function Auth() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const initialRole = (searchParams.get('role') as 'farmer' | 'customer') || 'farmer';
+  const { login, signup, isAuthenticated, role, switchRole } = useAuth();
+
+  useEffect(() => {
+    if (initialRole && role !== initialRole) {
+      switchRole(initialRole);
+    }
+  }, [initialRole]);
+
   const [isLogin, setIsLogin] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -18,7 +26,6 @@ export default function Auth() {
     phone: '',
     role: initialRole,
   });
-  const { login, signup, isAuthenticated, role } = useAuth();
 
   if (isAuthenticated && role) {
     return <Navigate to={role === 'farmer' ? '/farmer/dashboard' : '/customer/home'} replace />;
