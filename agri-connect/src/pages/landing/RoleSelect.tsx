@@ -6,16 +6,17 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function RoleSelect() {
   const [hoveredRole, setHoveredRole] = useState<string | null>(null);
-  
+
   const navigate = useNavigate();
-  const { switchRole } = useAuth();
+  const { isAuthenticated, role } = useAuth();
 
   const handleRoleSelect = (roleId: 'farmer' | 'customer') => {
-    switchRole(roleId);
-    if (roleId === 'farmer') {
-      navigate('/farmer/dashboard');
+    // If already authenticated with the right role, go directly to dashboard
+    if (isAuthenticated && role === roleId) {
+      navigate(roleId === 'farmer' ? '/farmer/dashboard' : '/customer/home');
     } else {
-      navigate('/customer/home');
+      // Send to the portal-specific auth page
+      navigate(roleId === 'farmer' ? '/auth/farmer' : '/auth/customer');
     }
   };
 
@@ -106,7 +107,7 @@ export default function RoleSelect() {
                     size="lg"
                     className="w-full"
                   >
-                    Continue as {role.title}
+                    {isAuthenticated ? `Go to ${role.title} Dashboard` : `Login / Sign Up as ${role.title}`}
                     <ChevronRight className="w-5 h-5 ml-2" />
                   </Button>
                 </div>
@@ -116,7 +117,9 @@ export default function RoleSelect() {
 
           <div className="text-center mt-12">
             <p className="text-sm text-text-light">
-              You can switch between roles anytime from your dashboard
+              {isAuthenticated
+                ? 'You can switch between roles anytime from your dashboard'
+                : 'Sign in or create an account to access your dashboard'}
             </p>
           </div>
         </div>

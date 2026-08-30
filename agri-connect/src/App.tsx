@@ -4,7 +4,8 @@ import { FarmerLayout } from './components/layout/FarmerLayout';
 import { CustomerLayout } from './components/layout/CustomerLayout';
 import Landing from './pages/landing/Landing';
 import RoleSelect from './pages/landing/RoleSelect';
-import Auth from './pages/auth/Auth';
+import FarmerAuth from './pages/auth/FarmerAuth';
+import CustomerAuth from './pages/auth/CustomerAuth';
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
 import DecisionCopilot from './pages/farmer/DecisionCopilot';
 import Tasks from './pages/farmer/Tasks';
@@ -40,17 +41,33 @@ import Rewards from './pages/customer/Rewards';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 function FarmerRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3" />
+        <p className="text-sm text-text-light font-medium">Loading session...</p>
+      </div>
+    );
+  }
   if (!isAuthenticated || role !== 'farmer') {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth/farmer" replace />;
   }
   return <>{children}</>;
 }
 
 function CustomerRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3" />
+        <p className="text-sm text-text-light font-medium">Loading session...</p>
+      </div>
+    );
+  }
   if (!isAuthenticated || role !== 'customer') {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth/customer" replace />;
   }
   return <>{children}</>;
 }
@@ -58,7 +75,9 @@ function CustomerRoute({ children }: { children: React.ReactNode }) {
 const router = createBrowserRouter([
   { path: '/', element: <Landing /> },
   { path: '/role', element: <RoleSelect /> },
-  { path: '/auth', element: <Auth /> },
+  { path: '/auth/farmer', element: <FarmerAuth /> },
+  { path: '/auth/customer', element: <CustomerAuth /> },
+  { path: '/auth', element: <Navigate to="/role" replace /> },
   {
     path: '/farmer',
     element: (

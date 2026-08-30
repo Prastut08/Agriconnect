@@ -1,4 +1,4 @@
-import { Leaf, Calendar, Droplets, TrendingUp, Eye, Sprout } from 'lucide-react';
+import { Leaf, Calendar, Droplets, TrendingUp, Eye } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';

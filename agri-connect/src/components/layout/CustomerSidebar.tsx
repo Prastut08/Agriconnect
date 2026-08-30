@@ -14,7 +14,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Leaf,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const navItems = [
   { path: '/customer/home', label: 'Customer Home', icon: Home },
@@ -31,6 +33,8 @@ const navItems = [
 ];
 
 export function CustomerSidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+  const { currentUser, logout } = useAuth();
+
   return (
     <>
       <aside
@@ -78,15 +82,28 @@ export function CustomerSidebar({ collapsed, onToggle }: { collapsed: boolean; o
         </nav>
 
         <div className="p-4 border-t border-gray-100">
-          <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-              <span className="text-sm font-semibold text-primary">PS</span>
+          <div className={`flex items-center justify-between gap-2 ${collapsed ? 'justify-center' : ''}`}>
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                <span className="text-sm font-semibold text-blue-700">
+                  {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : 'CU'}
+                </span>
+              </div>
+              {!collapsed && (
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-text truncate">{currentUser?.name || 'Customer Account'}</p>
+                  <p className="text-xs text-text-light truncate">{currentUser?.email || 'agri-909a6'}</p>
+                </div>
+              )}
             </div>
             {!collapsed && (
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-text truncate">Priya Sharma</p>
-                <p className="text-xs text-text-light truncate">Customer</p>
-              </div>
+              <button
+                onClick={logout}
+                title="Sign Out"
+                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors shrink-0"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             )}
           </div>
         </div>
@@ -94,3 +111,4 @@ export function CustomerSidebar({ collapsed, onToggle }: { collapsed: boolean; o
     </>
   );
 }
+

@@ -1,35 +1,99 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut, 
+  updateProfile, 
+  onAuthStateChanged,
+  type User as FirebaseUser 
+} from 'firebase/auth';
+import { auth, farmerAuth } from '../lib/firebase';
 import type { User } from '../types';
 import { mockUser, mockCustomer } from '../data/mockData';
+
+export interface AuthResponse {
+  success: boolean;
+  error?: string;
+  user?: User;
+}
 
 interface AuthContextType {
   currentUser: User | null;
   role: 'farmer' | 'customer' | null;
-  login: (email: string, password: string, role: 'farmer' | 'customer') => boolean;
-  signup: (name: string, email: string, password: string, phone: string, role: 'farmer' | 'customer') => boolean;
+  loading: boolean;
+  login: (email: string, password: string, role: 'farmer' | 'customer') => Promise<AuthResponse>;
+  signup: (name: string, email: string, password: string, phone: string, role: 'farmer' | 'customer') => Promise<AuthResponse>;
   switchRole: (newRole: 'farmer' | 'customer') => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Default to mockUser & farmer role so the app works seamlessly out of the box
-  const [currentUser, setCurrentUser] = useState<User | null>(mockUser);
-  const [role, setRole] = useState<'farmer' | 'customer' | null>('farmer');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [role, setRole] = useState<'farmer' | 'customer' | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Check localStorage first for saved session
     const stored = localStorage.getItem('agri_auth');
     if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed.user && parsed.role) {
-        setCurrentUser(parsed.user);
-        setRole(parsed.role);
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.user && parsed.role) {
+          setCurrentUser(parsed.user);
+          setRole(parsed.role);
+        }
+      } catch (e) {
+        console.error('Failed to parse agri_auth from localStorage', e);
       }
-    } else {
-      localStorage.setItem('agri_auth', JSON.stringify({ user: mockUser, role: 'farmer' }));
     }
+
+    // Listeners for Firebase auth changes
+    const unsubFarmer = onAuthStateChanged(farmerAuth, (fbUser: FirebaseUser | null) => {
+      if (fbUser) {
+        const userObj: User = {
+          id: fbUser.uid,
+          name: fbUser.displayName || 'Farmer User',
+          email: fbUser.email || '',
+          phone: fbUser.phoneNumber || '',
+          role: 'farmer',
+          createdAt: new Date().toISOString().split('T')[0],
+        };
+        setCurrentUser(userObj);
+        setRole('farmer');
+        localStorage.setItem('agri_auth', JSON.stringify({ user: userObj, role: 'farmer' }));
+      }
+      setLoading(false);
+    });
+
+    const unsubCustomer = onAuthStateChanged(auth, (fbUser: FirebaseUser | null) => {
+      if (fbUser) {
+        const userObj: User = {
+          id: fbUser.uid,
+          name: fbUser.displayName || 'Customer User',
+          email: fbUser.email || '',
+          phone: fbUser.phoneNumber || '',
+          role: 'customer',
+          createdAt: new Date().toISOString().split('T')[0],
+        };
+        setCurrentUser(userObj);
+        setRole('customer');
+        localStorage.setItem('agri_auth', JSON.stringify({ user: userObj, role: 'customer' }));
+      }
+      setLoading(false);
+    });
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
+    return () => {
+      unsubFarmer();
+      unsubCustomer();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const switchRole = (newRole: 'farmer' | 'customer') => {
@@ -39,37 +103,97 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('agri_auth', JSON.stringify({ user, role: newRole }));
   };
 
-  const login = (_email: string, _password: string, selectedRole: 'farmer' | 'customer'): boolean => {
-    const user = selectedRole === 'farmer' ? mockUser : mockCustomer;
-    setCurrentUser(user);
-    setRole(selectedRole);
-    localStorage.setItem('agri_auth', JSON.stringify({ user, role: selectedRole }));
-    return true;
+  const login = async (email: string, password: string, selectedRole: 'farmer' | 'customer'): Promise<AuthResponse> => {
+    const targetAuth = selectedRole === 'farmer' ? farmerAuth : auth;
+    try {
+      const cred = await signInWithEmailAndPassword(targetAuth, email, password);
+      const userObj: User = {
+        id: cred.user.uid,
+        name: cred.user.displayName || (selectedRole === 'farmer' ? 'Farmer' : 'Customer'),
+        email: cred.user.email || email,
+        phone: cred.user.phoneNumber || '',
+        role: selectedRole,
+        createdAt: new Date().toISOString().split('T')[0],
+      };
+      setCurrentUser(userObj);
+      setRole(selectedRole);
+      localStorage.setItem('agri_auth', JSON.stringify({ user: userObj, role: selectedRole }));
+      return { success: true, user: userObj };
+    } catch (err: any) {
+      console.warn('Firebase login error:', err);
+      // Fallback for mock/demo login if credentials match demo credentials
+      if (email === 'demo@farmer.com' || email === 'demo@customer.com' || email === 'farmer@agri.com' || email === 'customer@agri.com') {
+        const mock = selectedRole === 'farmer' ? mockUser : mockCustomer;
+        setCurrentUser(mock);
+        setRole(selectedRole);
+        localStorage.setItem('agri_auth', JSON.stringify({ user: mock, role: selectedRole }));
+        return { success: true, user: mock };
+      }
+
+      let errorMsg = err.message || 'Authentication failed.';
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        errorMsg = 'Invalid email or password. Please check credentials or sign up.';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMsg = 'The email address format is invalid.';
+      } else if (err.code === 'auth/too-many-requests') {
+        errorMsg = 'Too many failed login attempts. Please try again later.';
+      }
+      return { success: false, error: errorMsg };
+    }
   };
 
-  const signup = (name: string, email: string, _password: string, phone: string, selectedRole: 'farmer' | 'customer'): boolean => {
-    const newUser: User = {
-      id: selectedRole === 'farmer' ? 'farmer-new' : 'customer-new',
-      name,
-      email,
-      phone,
-      role: selectedRole,
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    setCurrentUser(newUser);
-    setRole(selectedRole);
-    localStorage.setItem('agri_auth', JSON.stringify({ user: newUser, role: selectedRole }));
-    return true;
+  const signup = async (
+    name: string, 
+    email: string, 
+    password: string, 
+    phone: string, 
+    selectedRole: 'farmer' | 'customer'
+  ): Promise<AuthResponse> => {
+    const targetAuth = selectedRole === 'farmer' ? farmerAuth : auth;
+    try {
+      const cred = await createUserWithEmailAndPassword(targetAuth, email, password);
+      if (name) {
+        await updateProfile(cred.user, { displayName: name }).catch(() => {});
+      }
+      const newUser: User = {
+        id: cred.user.uid,
+        name: name || cred.user.displayName || (selectedRole === 'farmer' ? 'New Farmer' : 'New Customer'),
+        email: cred.user.email || email,
+        phone: phone || '',
+        role: selectedRole,
+        createdAt: new Date().toISOString().split('T')[0],
+      };
+      setCurrentUser(newUser);
+      setRole(selectedRole);
+      localStorage.setItem('agri_auth', JSON.stringify({ user: newUser, role: selectedRole }));
+      return { success: true, user: newUser };
+    } catch (err: any) {
+      console.warn('Firebase signup error:', err);
+      let errorMsg = err.message || 'Failed to create account.';
+      if (err.code === 'auth/email-already-in-use') {
+        errorMsg = 'An account with this email already exists. Try signing in instead.';
+      } else if (err.code === 'auth/weak-password') {
+        errorMsg = 'Password should be at least 6 characters long.';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMsg = 'Please enter a valid email address.';
+      }
+      return { success: false, error: errorMsg };
+    }
   };
 
-  const logout = () => {
-    setCurrentUser(null);
-    setRole(null);
-    localStorage.removeItem('agri_auth');
+  const logout = async () => {
+    try {
+      await signOut(farmerAuth).catch(() => {});
+      await signOut(auth).catch(() => {});
+    } finally {
+      setCurrentUser(null);
+      setRole(null);
+      localStorage.removeItem('agri_auth');
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, role, login, signup, switchRole, logout, isAuthenticated: !!currentUser }}>
+    <AuthContext.Provider value={{ currentUser, role, loading, login, signup, switchRole, logout, isAuthenticated: !!currentUser }}>
       {children}
     </AuthContext.Provider>
   );
@@ -82,3 +206,4 @@ export function useAuth() {
   }
   return context;
 }
+

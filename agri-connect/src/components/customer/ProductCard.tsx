@@ -1,4 +1,4 @@
-import { ShoppingCart, Leaf, Star, MapPin, Clock } from 'lucide-react';
+import { ShoppingCart, Star, MapPin, Clock } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';

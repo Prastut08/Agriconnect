@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { Upload, Camera, AlertTriangle, Shield, CheckCircle, Activity, Sparkles, CloudRain, Thermometer } from 'lucide-react';
+import { Camera, AlertTriangle, Shield, CheckCircle, Activity, Sparkles, CloudRain, Thermometer } from 'lucide-react';
 import { mockDiseaseAlerts } from '../../data/mockData';
 
 export default function DiseaseAI() {
