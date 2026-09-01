@@ -9,7 +9,6 @@ import {
 } from 'firebase/auth';
 import { auth, farmerAuth } from '../lib/firebase';
 import type { User } from '../types';
-import { mockUser, mockCustomer } from '../data/mockData';
 
 export interface AuthResponse {
   success: boolean;
@@ -23,7 +22,6 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string, role: 'farmer' | 'customer') => Promise<AuthResponse>;
   signup: (name: string, email: string, password: string, phone: string, role: 'farmer' | 'customer') => Promise<AuthResponse>;
-  switchRole: (newRole: 'farmer' | 'customer') => void;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -36,26 +34,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Check localStorage first for saved session
-    const stored = localStorage.getItem('agri_auth');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed.user && parsed.role) {
-          setCurrentUser(parsed.user);
-          setRole(parsed.role);
-        }
-      } catch (e) {
-        console.error('Failed to parse agri_auth from localStorage', e);
-      }
-    }
+    // Clear any stale localStorage session — Firebase is the sole auth source
+    localStorage.removeItem('agri_auth');
 
-    // Listeners for Firebase auth changes
+    let farmerResolved = false;
+    let customerResolved = false;
+
+    const tryFinishLoading = () => {
+      if (farmerResolved && customerResolved) {
+        setLoading(false);
+      }
+    };
+
+    // Farmer Firebase auth listener
     const unsubFarmer = onAuthStateChanged(farmerAuth, (fbUser: FirebaseUser | null) => {
       if (fbUser) {
         const userObj: User = {
           id: fbUser.uid,
-          name: fbUser.displayName || 'Farmer User',
+          name: fbUser.displayName || 'Farmer',
           email: fbUser.email || '',
           phone: fbUser.phoneNumber || '',
           role: 'farmer',
@@ -63,16 +59,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         setCurrentUser(userObj);
         setRole('farmer');
-        localStorage.setItem('agri_auth', JSON.stringify({ user: userObj, role: 'farmer' }));
       }
-      setLoading(false);
+      farmerResolved = true;
+      tryFinishLoading();
     });
 
+    // Customer Firebase auth listener
     const unsubCustomer = onAuthStateChanged(auth, (fbUser: FirebaseUser | null) => {
       if (fbUser) {
         const userObj: User = {
           id: fbUser.uid,
-          name: fbUser.displayName || 'Customer User',
+          name: fbUser.displayName || 'Customer',
           email: fbUser.email || '',
           phone: fbUser.phoneNumber || '',
           role: 'customer',
@@ -80,14 +77,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         setCurrentUser(userObj);
         setRole('customer');
-        localStorage.setItem('agri_auth', JSON.stringify({ user: userObj, role: 'customer' }));
       }
-      setLoading(false);
+      customerResolved = true;
+      tryFinishLoading();
     });
 
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500);
+    // Safety timeout — never hang on loading forever
+    const timeout = setTimeout(() => setLoading(false), 3000);
 
     return () => {
       unsubFarmer();
@@ -96,12 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const switchRole = (newRole: 'farmer' | 'customer') => {
-    const user = newRole === 'farmer' ? mockUser : mockCustomer;
-    setCurrentUser(user);
-    setRole(newRole);
-    localStorage.setItem('agri_auth', JSON.stringify({ user, role: newRole }));
-  };
+
 
   const login = async (email: string, password: string, selectedRole: 'farmer' | 'customer'): Promise<AuthResponse> => {
     const targetAuth = selectedRole === 'farmer' ? farmerAuth : auth;
@@ -121,14 +112,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true, user: userObj };
     } catch (err: any) {
       console.warn('Firebase login error:', err);
-      // Fallback for mock/demo login if credentials match demo credentials
-      if (email === 'demo@farmer.com' || email === 'demo@customer.com' || email === 'farmer@agri.com' || email === 'customer@agri.com') {
-        const mock = selectedRole === 'farmer' ? mockUser : mockCustomer;
-        setCurrentUser(mock);
-        setRole(selectedRole);
-        localStorage.setItem('agri_auth', JSON.stringify({ user: mock, role: selectedRole }));
-        return { success: true, user: mock };
-      }
 
       let errorMsg = err.message || 'Authentication failed.';
       if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
@@ -193,7 +176,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, role, loading, login, signup, switchRole, logout, isAuthenticated: !!currentUser }}>
+    <AuthContext.Provider value={{ currentUser, role, loading, login, signup, logout, isAuthenticated: !!currentUser }}>
       {children}
     </AuthContext.Provider>
   );
