@@ -137,20 +137,28 @@ export default function Landing() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: Brain, title: 'AI Farm Copilot', desc: '24/7 intelligent assistant for all farming decisions' },
-              { icon: BarChart3, title: 'Yield Prediction', desc: 'AI-powered harvest forecasts with 90% accuracy' },
-              { icon: Shield, title: 'Disease Detection', desc: 'Real-time crop health monitoring and alerts' },
-              { icon: Globe, title: 'Market Intelligence', desc: 'Live mandi prices and selling recommendations' },
-              { icon: TrendingUp, title: 'Financial Analytics', desc: 'Complete profit tracking and expense management' },
-              { icon: Leaf, title: 'Soil Intelligence', desc: 'Smart soil analysis and fertilizer recommendations' },
-              { icon: Users, title: 'Community Network', desc: 'Connect with farmers, share knowledge, and grow together' },
+              { icon: Brain, title: 'AI Farm Copilot', desc: '24/7 intelligent assistant for all farming decisions', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=80' },
+              { icon: BarChart3, title: 'Yield Prediction', desc: 'AI-powered harvest forecasts with 90% accuracy', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80' },
+              { icon: Shield, title: 'Disease Detection', desc: 'Real-time crop health monitoring and alerts', image: '/disease-leaf.jpg' },
+              { icon: Globe, title: 'Market Intelligence', desc: 'Live mandi prices and selling recommendations', image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=600&q=80' },
+              { icon: TrendingUp, title: 'Financial Analytics', desc: 'Complete profit tracking and expense management', image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80' },
+              { icon: Leaf, title: 'Soil Intelligence', desc: 'Smart soil analysis and fertilizer recommendations', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80' },
+              { icon: Users, title: 'Community Network', desc: 'Connect with farmers, share knowledge, and grow together', image: 'https://images.unsplash.com/photo-1592417817098-8f3d6ef23a28?auto=format&fit=crop&w=600&q=80' },
             ].map((item, idx) => (
-              <Card key={idx} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-                  <item.icon className="w-6 h-6 text-primary" />
+              <Card key={idx} className="overflow-hidden hover:shadow-xl transition-all duration-300 rounded-3xl border border-gray-100 bg-white group">
+                <div className="relative h-44 overflow-hidden">
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-3 left-4 flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30 text-white">
+                      <item.icon className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-text mb-2">{item.title}</h3>
-                <p className="text-sm text-text-light">{item.desc}</p>
+                <div className="p-5">
+                  <p className="text-sm text-text-light">{item.desc}</p>
+                </div>
               </Card>
             ))}
           </div>

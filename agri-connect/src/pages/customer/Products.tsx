@@ -1,26 +1,41 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { ProductCard } from '../../components/customer/ProductCard';
-import { mockProducts } from '../../data/mockData';
+import { subscribeToMarketplaceProducts } from '../../lib/firestoreService';
+import type { Product } from '../../types';
 
 export default function Products() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
   const [filters, setFilters] = useState({ organic: false, nearMe: false, under50: false, today: false });
+  const [firestoreProducts, setFirestoreProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMarketplaceProducts((products) => {
+      setFirestoreProducts(products);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Use Firestore products only — no mock fallback
+  const allProducts = useMemo(() => {
+    const map = new Map<string, Product>();
+    firestoreProducts.forEach((p) => map.set(p.id, p));
+    return Array.from(map.values());
+  }, [firestoreProducts]);
 
   const categories = ['all', 'Vegetables', 'Fruits', 'Grains', 'Pulses', 'Dairy'];
 
   const filteredProducts = useMemo(() => {
-    let products = mockProducts.filter((product) => {
+    let products = allProducts.filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) || product.farmerName.toLowerCase().includes(search.toLowerCase());
-      const matchesCategory = category === 'all' || product.category === category;
+      const matchesCategory = category === 'all' || product.category.toLowerCase() === category.toLowerCase();
       const matchesOrganic = !filters.organic || product.farmingMethod === 'organic';
       const matchesNearMe = !filters.nearMe || product.distance < 20;
       const matchesUnder50 = !filters.under50 || product.price < 50;
-      const matchesToday = !filters.today || product.availableDate === '2025-03-18';
-      return matchesSearch && matchesCategory && matchesOrganic && matchesNearMe && matchesUnder50 && matchesToday;
+      return matchesSearch && matchesCategory && matchesOrganic && matchesNearMe && matchesUnder50;
     });
 
     if (sortBy === 'price') products = [...products].sort((a, b) => a.price - b.price);
@@ -29,7 +44,7 @@ export default function Products() {
     else products = [...products].sort((a, b) => b.rating - a.rating);
 
     return products;
-  }, [search, category, sortBy, filters]);
+  }, [search, category, sortBy, filters, allProducts]);
 
   return (
     <div className="space-y-6">

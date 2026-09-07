@@ -1,34 +1,51 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Mic, Sparkles, TrendingDown, QrCode, Flame, Clock, BadgeCheck } from 'lucide-react';
 import { ProductCard } from '../../components/customer/ProductCard';
 import { FarmerCard } from '../../components/customer/FarmerCard';
-import { mockProducts, mockFarmers, mockCustomer } from '../../data/mockData';
+// Removed mock data imports; using Firestore data instead
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
+import { subscribeToMarketplaceProducts } from '../../lib/firestoreService';
+import type { Product } from '../../types';
 
 export default function CustomerHome() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [firestoreProducts, setFirestoreProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMarketplaceProducts((products) => {
+      setFirestoreProducts(products);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Use only Firestore products; no mock fallback
+  const allProducts = useMemo(() => {
+    const map = new Map<string, Product>();
+    firestoreProducts.forEach((p) => map.set(p.id, p));
+    return Array.from(map.values());
+  }, [firestoreProducts]);
 
   const categories = ['all', 'Vegetables', 'Fruits', 'Grains', 'Pulses', 'Dairy', 'Organic', 'Seasonal'];
 
   const filteredProducts = useMemo(() => {
-    let products = mockProducts;
+    let products = allProducts;
     if (selectedCategory !== 'all') {
-      products = products.filter((p) => p.category === selectedCategory);
+      products = products.filter((p) => p.category.toLowerCase() === selectedCategory.toLowerCase());
     }
     if (search.trim()) {
       const q = search.toLowerCase();
       products = products.filter((p) => p.name.toLowerCase().includes(q) || p.farmerName.toLowerCase().includes(q));
     }
     return products;
-  }, [selectedCategory, search]);
+  }, [selectedCategory, search, allProducts]);
 
-  const freshNearYou = useMemo(() => filteredProducts.filter((p) => p.distance < 20).slice(0, 4), [filteredProducts]);
+  const freshNearYou = useMemo(() => filteredProducts.slice(0, 4), [filteredProducts]);
   const popularToday = useMemo(() => [...filteredProducts].sort((a, b) => b.rating - a.rating).slice(0, 4), [filteredProducts]);
-  const seasonalPicks = useMemo(() => filteredProducts.filter((p) => p.farmingMethod === 'organic').slice(0, 4), [filteredProducts]);
-  const topFarmers = useMemo(() => mockFarmers.filter((f) => f.rating >= 4.5).slice(0, 3), []);
+  const seasonalPicks = useMemo(() => filteredProducts.filter((p) => p.farmingMethod === 'organic' || p.freshness >= 95).slice(0, 4), [filteredProducts]);
+  const topFarmers = []; // Farmer data pending Firestore integration
 
   return (
     <div className="space-y-8 pb-16">
@@ -80,8 +97,8 @@ export default function CustomerHome() {
           </div>
           <div>
             <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Your Monthly Direct Impact</span>
-            <p className="text-2xl font-black text-emerald-950 mt-0.5">
-              🎉 You saved ₹{mockCustomer.savedAmount} this month!
+            <p className="text-2xl font-black text-emerald-950 mt-0.5">₹0
+               🎉 You saved ₹0 this month!
             </p>
             <p className="text-xs text-emerald-800 mt-0.5">By purchasing directly from local farmers near Chandigarh.</p>
           </div>
@@ -162,7 +179,7 @@ export default function CustomerHome() {
             <h2 className="text-2xl font-black text-text">Nearby Fresh Produce</h2>
             <p className="text-xs text-text-light">Farmers within 10-25 km radius</p>
           </div>
-          <Link to="/customer/products" className="text-xs font-bold text-primary hover:underline">View All Produce →</Link>
+            <Link to="/customer/products" className="text-xs font-bold text-primary hover:underline">View All Produce →</Link>
         </div>
         {freshNearYou.length === 0 ? (
           <Card className="p-12 text-center">
@@ -171,7 +188,9 @@ export default function CustomerHome() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {freshNearYou.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <Link to={`/customer/products/${product.id}`} key={product.id} className="block">
+                <ProductCard product={product} />
+              </Link>
             ))}
           </div>
         )}
@@ -189,9 +208,11 @@ export default function CustomerHome() {
           </div>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {popularToday.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+            {popularToday.map((product) => (
+              <Link to={`/customer/products/${product.id}`} key={product.id} className="block">
+                <ProductCard product={product} />
+              </Link>
+            ))}
         </div>
       </section>
 
@@ -207,9 +228,11 @@ export default function CustomerHome() {
           </div>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {seasonalPicks.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+            {seasonalPicks.map((product) => (
+              <Link to={`/customer/products/${product.id}`} key={product.id} className="block">
+                <ProductCard product={product} />
+              </Link>
+            ))}
         </div>
       </section>
 

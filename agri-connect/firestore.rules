@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ======================================================
+    // PRODUCTS COLLECTION – Customer Marketplace
+    // Public read (anyone can browse), write requires valid data
+    // (auth not enforced yet since app uses anonymous-style auth)
+    // ======================================================
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.price is number
+                    && request.resource.data.unit is string
+                    && request.resource.data.farmerId is string
+                    && request.resource.data.farmerName is string;
+      allow update: if request.resource.data.name is string
+                    && request.resource.data.price is number;
+      allow delete: if request.auth != null;
+    }
+
+    // ======================================================
+    // CROPS COLLECTION – Farmer Portal
+    // Public read for now; writes validated with required fields
+    // ======================================================
+    match /crops/{cropId} {
+      allow read: if true;
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.fieldName is string
+                    && request.resource.data.farmerId is string;
+      allow update: if request.resource.data.name is string;
+      allow delete: if request.auth != null;
+    }
+
+    // ======================================================
+    // USERS COLLECTION – Only owner can write
+    // ======================================================
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ======================================================
+    // ORDERS COLLECTION (future use)
+    // ======================================================
+    match /orders/{orderId} {
+      allow read: if true;
+      allow create: if request.resource.data.customerId is string
+                    && request.resource.data.farmerId is string;
+      allow update, delete: if request.auth != null;
+    }
+  }
+}

@@ -18,6 +18,17 @@ const agriProducts = [
   { id: 'agri-8', name: 'Urea Fertilizer', category: 'Fertilizers', price: 280, unit: 'bag', rating: 4.1, reviews: 45, recommendedFor: 'Rice' },
 ];
 
+const STORE_PRODUCT_IMAGES: Record<string, string> = {
+  'agri-1': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
+  'agri-2': 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?auto=format&fit=crop&w=600&q=80',
+  'agri-3': 'https://images.unsplash.com/photo-1592417817098-8f3d6ef23a28?auto=format&fit=crop&w=600&q=80',
+  'agri-4': 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80',
+  'agri-5': 'https://images.unsplash.com/photo-1617575521317-86433b6b1a13?auto=format&fit=crop&w=600&q=80',
+  'agri-6': 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=80',
+  'agri-7': 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cf?auto=format&fit=crop&w=600&q=80',
+  'agri-8': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80',
+};
+
 export default function AgriStore() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
@@ -78,33 +89,37 @@ export default function AgriStore() {
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <Card key={product.id} className="p-5 hover:shadow-lg transition-all duration-300 group">
-            <div className="flex items-start justify-between mb-3">
-              <Badge variant="primary">{product.category}</Badge>
-              {product.recommendedFor && <Badge variant="success">For {product.recommendedFor}</Badge>}
-            </div>
-            <div className="h-32 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mb-3">
-              <span className="text-4xl">🌱</span>
-            </div>
-            <h3 className="font-bold text-text mb-1 group-hover:text-primary transition-colors">{product.name}</h3>
-            <div className="flex items-center gap-1 mb-3">
-              <Star className="w-4 h-4 text-accent fill-accent" />
-              <span className="text-sm font-medium text-text">{product.rating}</span>
-              <span className="text-sm text-text-light">({product.reviews})</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-xl font-bold text-text">Rs. {product.price}</span>
-                <span className="text-sm text-text-light">/{product.unit}</span>
+        {filteredProducts.map((product) => {
+          const imgUrl = STORE_PRODUCT_IMAGES[product.id] || 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80';
+          return (
+            <Card key={product.id} className="p-5 hover:shadow-lg transition-all duration-300 group overflow-hidden rounded-3xl">
+              <div className="flex items-start justify-between mb-3 z-10 relative">
+                <Badge variant="primary">{product.category}</Badge>
+                {product.recommendedFor && <Badge variant="success">For {product.recommendedFor}</Badge>}
               </div>
-              <Button size="sm">
-                <ShoppingCart className="w-4 h-4 mr-1" />
-                Add
-              </Button>
-            </div>
-          </Card>
-        ))}
+              <div className="h-40 -mx-5 -mt-12 mb-3 relative overflow-hidden bg-gray-100">
+                <img src={imgUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              </div>
+              <h3 className="font-bold text-text mb-1 group-hover:text-primary transition-colors">{product.name}</h3>
+              <div className="flex items-center gap-1 mb-3">
+                <Star className="w-4 h-4 text-accent fill-accent" />
+                <span className="text-sm font-medium text-text">{product.rating}</span>
+                <span className="text-sm text-text-light">({product.reviews})</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xl font-bold text-text">Rs. {product.price}</span>
+                  <span className="text-sm text-text-light">/{product.unit}</span>
+                </div>
+                <Button size="sm">
+                  <ShoppingCart className="w-4 h-4 mr-1" />
+                  Add
+                </Button>
+              </div>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

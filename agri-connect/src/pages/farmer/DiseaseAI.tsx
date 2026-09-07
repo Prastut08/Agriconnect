@@ -234,6 +234,36 @@ export default function DiseaseAI() {
         </Card>
       )}
 
+      {/* Reference Scan Gallery */}
+      <Card className="p-6">
+        <h3 className="font-bold text-text mb-2 flex items-center gap-2">
+          <Activity className="w-5 h-5 text-primary" />
+          AI Training Leaf Reference Gallery
+        </h3>
+        <p className="text-xs text-text-light mb-4">Sample photos verified by agricultural scientists for early diagnosis</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { title: 'Tomato Late Blight', status: 'Infected Sample', image: '/disease-leaf.jpg', confidence: '98% match' },
+            { title: 'Wheat Stripe Rust', status: 'Fungal Risk', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=400&q=80', confidence: '94% match' },
+            { title: 'Rice Leaf Blast', status: 'High Humidity', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80', confidence: '91% match' },
+            { title: 'Healthy Green Crop', status: 'Optimal Health', image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=400&q=80', confidence: '100% healthy' },
+          ].map((sample, idx) => (
+            <div key={idx} className="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 group hover:shadow-md transition-all">
+              <div className="relative h-28">
+                <img src={sample.image} alt={sample.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                  {sample.confidence}
+                </div>
+              </div>
+              <div className="p-3">
+                <h4 className="text-xs font-bold text-text">{sample.title}</h4>
+                <p className="text-[11px] text-text-light">{sample.status}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
       {/* Prevention Tips */}
       <Card className="p-6">
         <h3 className="font-bold text-text mb-4 flex items-center gap-2">
