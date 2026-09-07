@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate, Navigate } from 'react-router-dom';
-import { Sprout, Phone, ArrowLeft, ShieldCheck, CheckCircle2, AlertCircle, RefreshCw, Sparkles } from 'lucide-react';
+import { useSearchParams, useNavigate, Navigate } from 'react-router-dom';
+import { Phone, ArrowLeft, ShieldCheck, CheckCircle2, AlertCircle, RefreshCw, Sparkles } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { useAuth } from '../../contexts/AuthContext';
@@ -145,15 +145,17 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-8">
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <Sprout className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-primary">AgriConnect</span>
-          </Link>
-          <h1 className="text-3xl font-bold text-text mb-2">{showForgotPassword ? 'Reset Password' : isLogin ? 'Welcome Back' : 'Create Account'}</h1>
-          <p className="text-text-light">{showForgotPassword ? 'Enter your email to reset password' : isLogin ? 'Sign in to your account' : 'Start your agricultural journey'}</p>
+        {/* Dynamic Image Header Card */}
+        <div className="relative rounded-3xl overflow-hidden mb-6 h-40 border border-gray-200 shadow-md">
+          <img
+            src={
+              formData.role === 'farmer'
+                ? 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=800&q=80'
+                : 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=800&q=80'
+            }
+            alt="Auth Header Visual"
+            className="w-full h-full object-cover transition-all duration-500"
+          />
         </div>
 
         <div className="bg-surface rounded-2xl shadow-sm border border-gray-100 p-8 relative">
