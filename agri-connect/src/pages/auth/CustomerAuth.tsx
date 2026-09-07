@@ -216,8 +216,13 @@ export default function CustomerAuth() {
 
       {/* Right decorative panel */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800">
-        {/* Background texture blobs */}
-        <div className="absolute top-0 left-0 w-full h-full">
+        {/* Background image overlay */}
+        <div className="absolute inset-0 z-0 opacity-30 mix-blend-overlay">
+          <img
+            src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=1400&q=80"
+            alt="Fresh produce basket"
+            className="w-full h-full object-cover object-center"
+          />
           <div className="absolute top-10 right-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
           <div className="absolute bottom-20 left-10 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-300/5 rounded-full blur-2xl" />
@@ -239,17 +244,9 @@ export default function CustomerAuth() {
             <span className="text-blue-300">Delivered</span><br />
             to Your Door
           </h1>
-          <p className="text-blue-100/80 text-lg leading-relaxed mb-8">
+          <p className="text-blue-100/80 text-lg leading-relaxed">
             Buy directly from verified local farmers. Get the freshest produce with full traceability and the best prices — cutting out the middlemen.
           </p>
-          <div className="space-y-3">
-            {['🌿 100% Fresh & Organic Options', '📍 Buy from Nearby Farmers', '💸 Best Prices, No Middlemen', '📦 Doorstep Delivery'].map(f => (
-              <div key={f} className="flex items-center gap-3 text-blue-100/90 text-sm font-medium">
-                <div className="w-1.5 h-1.5 bg-blue-400 rounded-full flex-shrink-0" />
-                {f}
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Bottom footer */}

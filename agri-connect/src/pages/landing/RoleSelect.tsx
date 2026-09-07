@@ -28,6 +28,7 @@ export default function RoleSelect() {
       description: 'AI-powered insights, market intelligence, and tools to maximize your farm productivity and profits.',
       icon: Sprout,
       color: 'primary',
+      image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=800&q=80',
       features: ['AI Crop Recommendations', 'Disease Detection', 'Yield Prediction', 'Market Prices', 'Financial Analytics'],
     },
     {
@@ -37,6 +38,7 @@ export default function RoleSelect() {
       description: 'Buy directly from verified farmers. Fresh produce, transparent pricing, and farm-to-table traceability.',
       icon: Users,
       color: 'secondary',
+      image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=800&q=80',
       features: ['Direct from Farmers', 'Fresh & Organic', 'Best Prices', 'Traceability', 'Home Delivery'],
     },
   ];
@@ -77,30 +79,29 @@ export default function RoleSelect() {
                 className="cursor-pointer block"
               >
                 <div
-                  className={`relative p-8 rounded-3xl border-2 transition-all duration-300 ${
+                  className={`relative p-8 rounded-3xl border-2 transition-all duration-300 overflow-hidden ${
                     hoveredRole === role.id
                       ? 'border-primary shadow-2xl scale-105 bg-surface'
                       : 'border-gray-200 bg-surface/50 hover:border-primary/50'
                   }`}
                 >
+                  {/* Card Header Image */}
+                  <div className="relative h-36 w-full rounded-2xl overflow-hidden mb-6">
+                    <img
+                      src={role.image}
+                      alt={role.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/20" />
+                  </div>
+
                   <div className={`w-20 h-20 ${role.id === 'farmer' ? 'bg-green-100' : 'bg-blue-100'} rounded-2xl flex items-center justify-center mb-6 mx-auto md:mx-0`}>
                     <role.icon className={`w-10 h-10 ${role.id === 'farmer' ? 'text-primary' : 'text-secondary'}`} />
                   </div>
 
                   <h2 className="text-3xl font-bold text-text mb-2 text-center md:text-left">{role.title}</h2>
                   <p className="text-lg text-primary font-medium mb-4 text-center md:text-left">{role.subtitle}</p>
-                  <p className="text-text-light mb-6 text-center md:text-left">{role.description}</p>
-
-                  <ul className="space-y-3 mb-8">
-                    {role.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-3 text-sm text-text">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${role.id === 'farmer' ? 'bg-green-100' : 'bg-blue-100'}`}>
-                          <ChevronRight className={`w-4 h-4 ${role.id === 'farmer' ? 'text-primary' : 'text-secondary'}`} />
-                        </div>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-text-light mb-8 text-center md:text-left">{role.description}</p>
 
                   <Button
                     variant={role.id === 'farmer' ? 'primary' : 'secondary'}

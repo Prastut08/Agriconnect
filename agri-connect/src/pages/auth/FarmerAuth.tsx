@@ -60,8 +60,13 @@ export default function FarmerAuth() {
     <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-green-900 to-emerald-800 flex">
       {/* Left decorative panel */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden">
-        {/* Background texture blobs */}
-        <div className="absolute top-0 left-0 w-full h-full">
+        {/* Background image overlay */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1400&q=80"
+            alt="Farmer in field"
+            className="w-full h-full object-cover object-center opacity-30 mix-blend-overlay"
+          />
           <div className="absolute top-10 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-300/5 rounded-full blur-2xl" />
@@ -83,17 +88,9 @@ export default function FarmerAuth() {
             <span className="text-emerald-300">Intelligence</span><br />
             Platform
           </h1>
-          <p className="text-emerald-100/80 text-lg leading-relaxed mb-8">
+          <p className="text-emerald-100/80 text-lg leading-relaxed">
             AI-powered crop management, real-time market prices, and smart insights to maximize your farm's productivity and profit.
           </p>
-          <div className="space-y-3">
-            {['🤖 AI Crop Disease Detection', '📈 Market Sell/Wait Advisor', '🌦 Smart Weather Irrigation', '💰 Profit & Finance Tracker'].map(f => (
-              <div key={f} className="flex items-center gap-3 text-emerald-100/90 text-sm font-medium">
-                <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full flex-shrink-0" />
-                {f}
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Bottom footer */}
